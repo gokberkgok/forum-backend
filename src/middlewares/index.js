@@ -34,7 +34,7 @@ export {
 } from './validation.middleware.js';
 export {
   helmetOptions,
-  corsOptions,
+  //corsOptions,
   validateCloudflareRequest,
   requestIdHook,
   sanitizeRequest,
