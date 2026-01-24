@@ -46,7 +46,7 @@ const registerPlugins = async () => {
     'https://www.forum-frontend-8kh.pages.dev',
   ]
 
-  await app.register(cors, {
+  await app.register(fastifyCors, {
     origin: (origin, cb) => {
       // Server-side, health check, curl, render probe
       if (!origin) {
