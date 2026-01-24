@@ -1,0 +1,50 @@
+{
+  "name": "forum-system-backend",
+  "version": "1.0.0",
+  "description": "Production-ready secure forum backend (Node.js + Express + Supabase)",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "start:pm2": "pm2 start src/server.js --name forum-api -i max",
+    "stop:pm2": "pm2 stop forum-api",
+    "restart:pm2": "pm2 restart forum-api",
+    "logs": "pm2 logs forum-api",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.1",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/helmet": "^13.0.1",
+    "@fastify/multipart": "^9.3.0",
+    "@fastify/rate-limit": "^10.2.2",
+    "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^11.1.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^13.1.3",
+    "sanitize-html": "^2.13.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.3.0",
+    "nodemon": "^3.1.0",
+    "pm2": "^5.4.2",
+    "prettier": "^3.3.2",
+    "prisma": "^5.22.0"
+  }
+}

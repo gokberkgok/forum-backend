@@ -1,0 +1,495 @@
+// ====================================================
+// PRISMA SCHEMA - FORUM SYSTEM DATABASE
+// ====================================================
+// This schema defines the complete data model for
+// a production-ready forum system with RBAC.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "mysql"  //"postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ====================================================
+// ENUMS
+// ====================================================
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  PENDING_VERIFICATION
+}
+
+enum TopicStatus {
+  OPEN
+  CLOSED
+  PINNED
+  ARCHIVED
+}
+
+enum PostStatus {
+  VISIBLE
+  HIDDEN
+  DELETED
+}
+
+enum WarningStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+// ====================================================
+// USER MODEL
+// ====================================================
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  username      String     @unique
+  passwordHash  String     @map("password_hash")
+  displayName   String?    @map("display_name")
+  avatar        String?
+  bio           String?
+  location      String?
+  website       String?
+  
+  // Birth date
+  birthDate     DateTime?  @map("birth_date")
+  showBirthDate Boolean    @default(false) @map("show_birth_date")
+  
+  // Social links
+  discord       String?
+  github        String?
+  twitter       String?
+  
+  role          Role       @default(USER)
+  status        UserStatus @default(PENDING_VERIFICATION)
+  
+  // Email verification
+  emailVerified Boolean    @default(false) @map("email_verified")
+  verifyToken   String?    @map("verify_token")
+  
+  // Password reset
+  resetToken       String?   @map("reset_token")
+  resetTokenExpiry DateTime? @map("reset_token_expiry")
+  
+  // Security
+  lastLoginAt   DateTime?  @map("last_login_at")
+  lastLoginIp   String?    @map("last_login_ip")
+  failedLogins  Int        @default(0) @map("failed_logins")
+  lockedUntil   DateTime?  @map("locked_until")
+  
+  // Timestamps
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  
+  // Relations
+  refreshTokens RefreshToken[]
+  topics        Topic[]
+  posts         Post[]
+  reactions     Reaction[]
+  topicLikes    TopicLike[]
+  warnings      Warning[]       @relation("WarnedUser")
+  givenWarnings Warning[]       @relation("WarningModerator")
+  notifications Notification[]
+  
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+// ====================================================
+// REFRESH TOKEN MODEL
+// ====================================================
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  tokenHash   String   @unique @map("token_hash")
+  userId      String   @map("user_id")
+  userAgent   String?  @map("user_agent")
+  ipAddress   String?  @map("ip_address")
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  revokedAt   DateTime? @map("revoked_at")
+  replacedBy  String?  @map("replaced_by")
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+// ====================================================
+// MENU MODEL (Category Groups)
+// ====================================================
+
+model Menu {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  sortOrder   Int      @default(0) @map("sort_order")
+  isExpanded  Boolean  @default(true) @map("is_expanded")
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  categories  Category[]
+  
+  @@index([slug])
+  @@index([sortOrder])
+  @@map("menus")
+}
+
+// ====================================================
+// CATEGORY MODEL
+// ====================================================
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  isVisible   Boolean  @default(true) @map("is_visible")
+  
+  // Foreign keys
+  menuId      String?  @map("menu_id")
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  menu        Menu?    @relation(fields: [menuId], references: [id])
+  topics      Topic[]
+  
+  @@index([slug])
+  @@index([sortOrder])
+  @@index([menuId])
+  @@map("categories")
+}
+
+// ====================================================
+// TOPIC MODEL
+// ====================================================
+
+model Topic {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String
+  content     String      @db.Text
+  contentHtml String      @map("content_html") @db.Text
+  status      TopicStatus @default(OPEN)
+  isPinned    Boolean     @default(false) @map("is_pinned")
+  pinnedColor String?     @map("pinned_color")  // Sabitlenmiş konu arka plan rengi
+  isLocked    Boolean     @default(false) @map("is_locked")
+  viewCount   Int         @default(0) @map("view_count")
+  
+  // Foreign keys
+  authorId    String      @map("author_id")
+  categoryId  String      @map("category_id")
+  
+  // Timestamps
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  lastPostAt  DateTime?   @map("last_post_at")
+  
+  // Relations
+  author      User        @relation(fields: [authorId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
+  posts       Post[]
+  tags        TagOnTopic[]
+  likes       TopicLike[]
+  
+  @@unique([categoryId, slug])
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([lastPostAt])
+  @@map("topics")
+}
+
+// ====================================================
+// TOPIC LIKE MODEL
+// ====================================================
+
+model TopicLike {
+  id        String   @id @default(cuid())
+  
+  // Foreign keys
+  userId    String   @map("user_id")
+  topicId   String   @map("topic_id")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, topicId])
+  @@index([topicId])
+  @@map("topic_likes")
+}
+
+// ====================================================
+// POST MODEL (Replies)
+// ====================================================
+
+model Post {
+  id          String     @id @default(cuid())
+  content     String     @db.Text
+  contentHtml String     @map("content_html") @db.Text
+  status      PostStatus @default(VISIBLE)
+  isEdited    Boolean    @default(false) @map("is_edited")
+  editReason  String?    @map("edit_reason")
+  
+  // Foreign keys
+  authorId    String     @map("author_id")
+  topicId     String     @map("topic_id")
+  parentId    String?    @map("parent_id")
+  
+  // Timestamps
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  
+  // Relations
+  author      User       @relation(fields: [authorId], references: [id])
+  topic       Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  parent      Post?      @relation("PostReplies", fields: [parentId], references: [id])
+  replies     Post[]     @relation("PostReplies")
+  reactions   Reaction[]
+  
+  @@index([authorId])
+  @@index([topicId])
+  @@index([parentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("posts")
+}
+
+// ====================================================
+// TAG MODEL
+// ====================================================
+
+model Tag {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
+  color     String?
+  
+  // Timestamps
+  createdAt DateTime     @default(now()) @map("created_at")
+  
+  // Relations
+  topics    TagOnTopic[]
+  
+  @@index([slug])
+  @@map("tags")
+}
+
+model TagOnTopic {
+  topicId   String   @map("topic_id")
+  tagId     String   @map("tag_id")
+  
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([topicId, tagId])
+  @@map("tags_on_topics")
+}
+
+// ====================================================
+// REACTION MODEL
+// ====================================================
+
+model Reaction {
+  id        String   @id @default(cuid())
+  type      String   // like, love, laugh, etc.
+  
+  // Foreign keys
+  userId    String   @map("user_id")
+  postId    String   @map("post_id")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId, type])
+  @@index([postId])
+  @@map("reactions")
+}
+
+// ====================================================
+// WARNING MODEL (Moderation)
+// ====================================================
+
+model Warning {
+  id          String        @id @default(cuid())
+  reason      String
+  points      Int           @default(1)
+  status      WarningStatus @default(ACTIVE)
+  expiresAt   DateTime?     @map("expires_at")
+  
+  // Foreign keys
+  userId      String        @map("user_id")
+  moderatorId String        @map("moderator_id")
+  
+  // Timestamps
+  createdAt   DateTime      @default(now()) @map("created_at")
+  
+  // Relations
+  user        User          @relation("WarnedUser", fields: [userId], references: [id])
+  moderator   User          @relation("WarningModerator", fields: [moderatorId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@map("warnings")
+}
+
+// ====================================================
+// NOTIFICATION MODEL
+// ====================================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
+  
+  // Foreign keys
+  userId    String   @map("user_id")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ====================================================
+// AUDIT LOG MODEL
+// ====================================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  userId      String?  @map("user_id")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  oldValues   Json?    @map("old_values")
+  newValues   Json?    @map("new_values")
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ====================================================
+// ADVERTISEMENT MODEL
+// ====================================================
+
+enum AdvertisementType {
+  BANNER      // 728x90 - Anasayfa üstü banner
+  POPUP       // 1300x600 - Popup penceresi
+}
+
+enum AdvertisementStatus {
+  ACTIVE
+  INACTIVE
+  SCHEDULED
+  EXPIRED
+}
+
+model Advertisement {
+  id            String              @id @default(cuid())
+  name          String              // Reklam adı (admin için)
+  type          AdvertisementType
+  status        AdvertisementStatus @default(INACTIVE)
+  
+  // Content
+  imageUrl      String              @map("image_url")        // Resim/GIF URL
+  linkUrl       String?             @map("link_url")         // Tıklandığında gidilecek URL
+  altText       String?             @map("alt_text")         // Resim alt text
+  
+  // Popup specific
+  title         String?                                      // Popup başlık
+  description   String?             @db.Text                 // Popup açıklama metni
+  
+  // Banner specific  
+  position      Int                 @default(0)              // Sıralama (birden fazla banner için)
+  
+  // Display settings
+  backgroundColor String?           @map("background_color") // Arka plan rengi
+  
+  // Scheduling
+  startDate     DateTime?           @map("start_date")
+  endDate       DateTime?           @map("end_date")
+  
+  // Analytics
+  impressions   Int                 @default(0)              // Görüntülenme sayısı
+  clicks        Int                 @default(0)              // Tıklanma sayısı
+  
+  // Timestamps
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  
+  @@index([type])
+  @@index([status])
+  @@index([startDate, endDate])
+  @@map("advertisements")
+}
+
+// ====================================================
+// SITE SETTINGS MODEL (for popup control etc.)
+// ====================================================
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  @@map("site_settings")
+}
