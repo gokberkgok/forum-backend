@@ -115,10 +115,10 @@ app.addHook('preHandler', async (request, reply) => {
 // Root endpoint
 app.get('/', async (request, reply) => {
   return {
-    name: 'Forum System API',
+    name: 'forum-backend',
     version: '1.0.0',
-    status: 'running',
-    documentation: '/api/docs',
+    status: 'ok',
+    env: process.env.NODE_ENV
   };
 });
 
