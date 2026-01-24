@@ -15,9 +15,9 @@ class AuthController {
     // Access token cookie
     res.setCookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: config.cookie.secure,
-      sameSite: config.cookie.sameSite,
-      domain: config.cookie.domain,
+      secure: true,  //config.cookie.secure,
+      sameSite: 'None', //config.cookie.sameSite,
+     // domain: config.cookie.domain,
       maxAge: 15 * 60, // 15 minutes (seconds in Fastify)
       path: '/',
     });
@@ -25,9 +25,9 @@ class AuthController {
     // Refresh token cookie
     res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: config.cookie.secure,
-      sameSite: config.cookie.sameSite,
-      domain: config.cookie.domain,
+      secure: true, //config.cookie.secure,
+      sameSite: 'None', //config.cookie.sameSite,
+      //domain: config.cookie.domain,
       maxAge: 7 * 24 * 60 * 60, // 7 days (seconds in Fastify)
       path: '/',
     });

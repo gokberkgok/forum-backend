@@ -45,35 +45,29 @@ export const helmetOptions = {
  */
 export const corsOptions = {
   origin: (origin, cb) => {
-    // Allow requests with no origin (mobile apps, curl, etc.) in development
-    if (!origin && config.isDevelopment) {
-      return cb(null, true);
-    }
+      // Server-side, health check, curl, render probe
+      if (!origin) {
+        return cb(null, true)
+      }
 
-    const allowedOrigins = [config.frontendUrl];
-    
-    // Add additional origins for development
-    if (config.isDevelopment) {
-      allowedOrigins.push('http://localhost:3000', 'http://127.0.0.1:3000');
-    }
+      if (allowedOrigins.includes(origin)) {
+        return cb(null, true)
+      }
 
-    if (allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'), false);
-    }
-  },
-  credentials: true, // Allow cookies
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-  ],
-  exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
-  maxAge: 86400, // Cache preflight for 24 hours
+      // ❗ HATA FIRLATMA → false dön
+      return cb(null, false)
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
+    exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+    maxAge: 86400, // Cache preflight for 24 hours
 };
 
 /**

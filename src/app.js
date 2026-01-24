@@ -40,31 +40,28 @@ const registerPlugins = async () => {
     contentSecurityPolicy: config.env === 'production',
   });
 
-  // CORS configuration
-  await app.register(fastifyCors, {
+  const allowedOrigins = [
+    'https://forum-frontend-8kh.pages.dev',
+    'https://9a7f6333.forum-frontend-8kh.pages.dev',
+    'https://www.forum-frontend-8kh.pages.dev',
+  ]
+
+  await app.register(cors, {
     origin: (origin, cb) => {
-      // Allow requests with no origin (mobile apps, curl, etc.) in development
-      if (!origin && config.isDevelopment) {
-        return cb(null, true);
+      // Server-side, health check, curl, render probe
+      if (!origin) {
+        return cb(null, true)
       }
-      
-      const allowedOrigins = [config.frontendUrl];
-      
-      // Add localhost origins for development
-      if (config.isDevelopment) {
-        allowedOrigins.push('http://localhost:3000', 'http://127.0.0.1:3000');
-      }
-      
+
       if (allowedOrigins.includes(origin)) {
-        cb(null, true);
-      } else {
-        cb(new Error('Not allowed by CORS'), false);
+        return cb(null, true)
       }
+
+      // ❗ HATA FIRLATMA → false dön
+      return cb(null, false)
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
-  });
+  })
 
   // Cookie parser
   await app.register(fastifyCookie, {
