@@ -41,9 +41,8 @@ const registerPlugins = async () => {
   });
 
   const allowedOrigins = [
-    'https://forum-frontend-8kh.pages.dev',
-    'https://9a7f6333.forum-frontend-8kh.pages.dev',
-    'https://www.forum-frontend-8kh.pages.dev',
+    'https://ec1856b1.forum-frontend-8kh.pages.dev',
+    'forum-frontend-8kh.pages.dev'
   ]
 
   await app.register(fastifyCors, {
