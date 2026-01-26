@@ -9,7 +9,6 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import config from './config/index.js';
-import logger from './utils/logger.js';
 import { registerRoutes } from './routes/index.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 
@@ -42,7 +41,8 @@ const registerPlugins = async () => {
 
   const allowedOrigins = [
     'https://ec1856b1.forum-frontend-8kh.pages.dev',
-    'forum-frontend-8kh.pages.dev'
+    'forum-frontend-8kh.pages.dev',
+    'https://pzturk.com'
   ]
 
   await app.register(fastifyCors, {
@@ -113,8 +113,7 @@ app.get('/', async (request, reply) => {
   return {
     name: 'forum-backend',
     version: '1.0.0',
-    status: 'ok',
-    env: process.env.NODE_ENV
+    status: 'ok'
   };
 });
 
