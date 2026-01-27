@@ -258,36 +258,46 @@ model TopicLike {
 // ====================================================
 
 model Post {
-  id          String     @id @default(cuid())
-  content     String     @db.Text
-  contentHtml String     @map("content_html") @db.Text
-  status      PostStatus @default(VISIBLE)
-  isEdited    Boolean    @default(false) @map("is_edited")
-  editReason  String?    @map("edit_reason")
-  
+  id String @id @default(cuid())
+  content String @db.Text
+  contentHtml String @map("content_html") @db.Text
+  status PostStatus @default(VISIBLE)
+  isEdited Boolean @default(false) @map("is_edited")
+  editReason String? @map("edit_reason")
+
+  // Quote fields
+  isQuoted Boolean @default(false) @map("is_quoted")
+  quotedPostId String? @map("quoted_post_id")
+
   // Foreign keys
-  authorId    String     @map("author_id")
-  topicId     String     @map("topic_id")
-  parentId    String?    @map("parent_id")
-  
+  authorId String @map("author_id")
+  topicId String @map("topic_id")
+  parentId String? @map("parent_id")
+
   // Timestamps
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   // Relations
-  author      User       @relation(fields: [authorId], references: [id])
-  topic       Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  parent      Post?      @relation("PostReplies", fields: [parentId], references: [id])
-  replies     Post[]     @relation("PostReplies")
-  reactions   Reaction[]
-  
+  author User @relation(fields: [authorId], references: [id])
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  parent Post? @relation("PostReplies", fields: [parentId], references: [id])
+  replies Post[] @relation("PostReplies")
+  reactions Reaction[]
+
+  // Self-relation for quoted post
+  quotedPost Post? @relation("PostQuoted", fields: [quotedPostId], references: [id])
+  quotedBy Post[] @relation("PostQuoted")
+
   @@index([authorId])
   @@index([topicId])
   @@index([parentId])
   @@index([status])
   @@index([createdAt])
+  @@index([quotedPostId])
   @@map("posts")
 }
+
 
 // ====================================================
 // TAG MODEL
