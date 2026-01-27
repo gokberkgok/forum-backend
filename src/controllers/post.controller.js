@@ -81,13 +81,13 @@ class PostController {
    * Create post (reply)
    * POST /api/posts
    */
-  create = async (req, res) => {
-    const { content, topicId, parentId } = req.body;
+ create = async (req, res) => {
+  const { content, topicId, parentId, isQuoted, quotedPostId } = req.body;
 
-    const post = await postService.create(
-      { content, topicId, parentId },
-      req.user
-    );
+  const post = await postService.create(
+    { content, topicId, parentId, isQuoted, quotedPostId },
+    req.user
+  );
 
     return createdResponse(res, post, 'Reply posted');
   };

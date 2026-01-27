@@ -213,7 +213,8 @@ class TopicController {
    */
   togglePin = async (req, res) => {
     const { id } = req.params;
-    const { pinnedColor } = req.body;
+    // req.body may be undefined for empty requests — read safely and default to null
+    const pinnedColor = req.body?.pinnedColor ?? null;
 
     const topic = await topicService.togglePin(id, req.user, pinnedColor);
 
@@ -226,7 +227,8 @@ class TopicController {
    */
   updatePinnedColor = async (req, res) => {
     const { id } = req.params;
-    const { pinnedColor } = req.body;
+    // protect against missing req.body
+    const pinnedColor = req.body?.pinnedColor ?? null;
 
     const topic = await topicService.updatePinnedColor(id, req.user, pinnedColor);
 

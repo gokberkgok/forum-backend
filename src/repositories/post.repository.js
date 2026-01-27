@@ -46,6 +46,18 @@ class PostRepository {
             replies: true,
           },
         },
+        quotedPost: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                displayName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -61,6 +73,8 @@ class PostRepository {
         authorId: data.authorId,
         topicId: data.topicId,
         parentId: data.parentId || null,
+        isQuoted: data.isQuoted || false,
+        quotedPostId: data.quotedPostId || null
       },
       include: {
         author: {
@@ -196,6 +210,30 @@ class PostRepository {
                 select: {
                   type: true,
                   userId: true,
+                },
+              },
+              quotedPost: {
+                include: {
+                  author: {
+                    select: {
+                      id: true,
+                      username: true,
+                      displayName: true,
+                      avatar: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          quotedPost: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  username: true,
+                  displayName: true,
+                  avatar: true,
                 },
               },
             },

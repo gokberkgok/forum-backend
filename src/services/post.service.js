@@ -103,6 +103,8 @@ class PostService {
       authorId: user.id,
       topicId: data.topicId,
       parentId: data.parentId,
+      isQuoted: data.isQuoted,
+      quotedPostId: data.quotedPostId,
     });
 
     // Extract hashtags from post content and add to topic
