@@ -8,6 +8,7 @@ import fastifyCors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
+import fastifyMultipart from '@fastify/multipart';
 import config from './config/index.js';
 import { registerRoutes } from './routes/index.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
@@ -40,26 +41,20 @@ const registerPlugins = async () => {
   });
 
   const allowedOrigins = [
-    'https://ec1856b1.forum-frontend-8kh.pages.dev',
-    'forum-frontend-8kh.pages.dev',
-    'https://pzturk.com'
+    
   ]
 
   await app.register(fastifyCors, {
-    origin: (origin, cb) => {
-      // Server-side, health check, curl, render probe
-      if (!origin) {
-        return cb(null, true)
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        return cb(null, true)
-      }
-
-      // ❗ HATA FIRLATMA → false dön
-      return cb(null, false)
-    },
+    origin: [
+      'https://ec1856b1.forum-frontend-8kh.pages.dev',
+      'forum-frontend-8kh.pages.dev',
+      'https://pzturk.com',
+      'http://127.0.0.1',
+      'http://localhost:3000'
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],  
+    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With']
   })
 
   // Cookie parser
@@ -86,6 +81,14 @@ const registerPlugins = async () => {
              request.headers['x-real-ip'] ||
              request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
              request.ip;
+    },
+  });
+
+  // Multipart (file uploads)
+  await app.register(fastifyMultipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10 MB per file
+      files: 5,
     },
   });
 };
