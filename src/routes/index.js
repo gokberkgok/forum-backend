@@ -10,6 +10,7 @@ import { registerTopicRoutes } from './topic.routes.js';
 import { registerPostRoutes } from './post.routes.js';
 import { registerTagRoutes } from './tag.routes.js';
 import { registerMenuRoutes } from './menu.routes.js';
+import { registerUploadRoutes } from './upload.routes.js';
 import advertisementRoutes from './advertisement.routes.js';
 
 export const registerRoutes = async (app) => {
@@ -31,6 +32,7 @@ export const registerRoutes = async (app) => {
     await registerPostRoutes(api);
     await registerTagRoutes(api);
     await registerMenuRoutes(api);
+    await registerUploadRoutes(api);
     
     // Advertisement routes
     api.register(advertisementRoutes, { prefix: '/ads' });

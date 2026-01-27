@@ -14,7 +14,6 @@ export {
   ROLES 
 } from './rbac.middleware.js';
 export {
-  globalRateLimiter,
   authRateLimiter,
   passwordResetRateLimiter,
   contentCreationRateLimiter,
@@ -23,8 +22,7 @@ export {
 } from './rateLimit.middleware.js';
 export { 
   notFoundHandler, 
-  errorHandler, 
-  asyncHandler 
+  errorHandler
 } from './error.middleware.js';
 export { 
   validateBody, 

@@ -41,6 +41,7 @@ class UserRepository {
    * Find user by email
    */
   async findByEmail(email, includePassword = false) {
+    if (!email) return null;
     return prisma.user.findUnique({
       where: { email: email.toLowerCase() },
       select: {

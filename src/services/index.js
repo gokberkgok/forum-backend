@@ -10,3 +10,4 @@ export { default as topicService } from './topic.service.js';
 export { default as postService } from './post.service.js';
 export { default as tagService } from './tag.service.js';
 export { default as menuService } from './menu.service.js';
+export { default as uploadService } from './upload.service.js';

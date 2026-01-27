@@ -10,3 +10,4 @@ export { default as topicController } from './topic.controller.js';
 export { default as postController } from './post.controller.js';
 export { default as tagController } from './tag.controller.js';
 export { default as menuController } from './menu.controller.js';
+export { default as uploadController } from './upload.controller.js';
