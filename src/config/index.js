@@ -72,9 +72,10 @@ const config = {
   // Cookies
   cookie: {
     domain: process.env.COOKIE_DOMAIN || undefined,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict',
+    secure: true, //process.env.NODE_ENV === 'production',
+    sameSite: 'none',
     httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 1 gün
   },
 
   // Security

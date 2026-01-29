@@ -16,8 +16,8 @@ class AuthController {
     res.setCookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,  //config.cookie.secure,
-      sameSite: 'None', //config.cookie.sameSite,
-     // domain: config.cookie.domain,
+      sameSite: 'none', //config.cookie.sameSite,
+      // domain: config.cookie.domain,
       maxAge: 15 * 60, // 15 minutes (seconds in Fastify)
       path: '/',
     });
@@ -55,7 +55,7 @@ class AuthController {
    */
   register = async (req, res) => {
     const { email, username, password, displayName } = req.body;
-    
+
     const result = await authService.register({
       email,
       username,
@@ -72,7 +72,7 @@ class AuthController {
    */
   login = async (req, res) => {
     const { email, password } = req.body;
-    
+
     const result = await authService.login({
       email,
       password,
@@ -223,11 +223,11 @@ class AuthController {
    * PATCH /api/auth/profile
    */
   updateProfile = async (req, res) => {
-    const { 
-      displayName, 
-      bio, 
-      location, 
-      website, 
+    const {
+      displayName,
+      bio,
+      location,
+      website,
       avatar,
       birthDate,
       showBirthDate,
