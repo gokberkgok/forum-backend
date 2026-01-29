@@ -41,7 +41,7 @@ class AuthController {
       httpOnly: true,
       secure: config.cookie.secure,
       sameSite: config.cookie.sameSite,
-      domain: config.cookie.domain,
+      //domain: config.cookie.domain,
       path: '/',
     };
 
