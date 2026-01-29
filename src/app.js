@@ -40,21 +40,14 @@ const registerPlugins = async () => {
     contentSecurityPolicy: config.env === 'production',
   });
 
-  const allowedOrigins = [
-    
-  ]
 
   await app.register(fastifyCors, {
     origin: [
-      'https://ec1856b1.forum-frontend-8kh.pages.dev',
-      'forum-frontend-8kh.pages.dev',
       'https://pzturk.com',
-      'http://127.0.0.1',
-      'http://localhost:3000',
-      'http://localhost:5000'
+      'https://admin.pzturk.com'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],  
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With']
   })
 
@@ -79,9 +72,9 @@ const registerPlugins = async () => {
     },
     keyGenerator: (request) => {
       return request.headers['cf-connecting-ip'] ||
-             request.headers['x-real-ip'] ||
-             request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-             request.ip;
+        request.headers['x-real-ip'] ||
+        request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+        request.ip;
     },
   });
 
