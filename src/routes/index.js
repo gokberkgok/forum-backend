@@ -36,6 +36,6 @@ export const registerRoutes = async (app) => {
     
     // Advertisement routes
     api.register(advertisementRoutes, { prefix: '/ads' });
-  }, { prefix: '/api' });
+  }, { prefix: '/' });
 };
 
