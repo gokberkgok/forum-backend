@@ -14,22 +14,23 @@ class AuthController {
   setAuthCookies(res, accessToken, refreshToken) {
     // Access token cookie
     res.setCookie('accessToken', accessToken, {
+      path: '/',
       httpOnly: true,
       secure: true,  //config.cookie.secure,
-      sameSite: 'none', //config.cookie.sameSite,
-      // domain: config.cookie.domain,
-      maxAge: 15 * 60, // 15 minutes (seconds in Fastify)
-      path: '/',
+      sameSite: 'lax', //config.cookie.sameSite,
+      domain: config.cookie.domain,
+      maxAge: 15 * 60 // 15 minutes (seconds in Fastify)
     });
 
     // Refresh token cookie
     res.setCookie('refreshToken', refreshToken, {
+      path: '/',
       httpOnly: true,
       secure: true, //config.cookie.secure,
-      sameSite: 'None', //config.cookie.sameSite,
-      //domain: config.cookie.domain,
+      sameSite: 'lax', //config.cookie.sameSite,
+      domain: config.cookie.domain,
       maxAge: 7 * 24 * 60 * 60, // 7 days (seconds in Fastify)
-      path: '/',
+     
     });
   }
 
