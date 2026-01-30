@@ -46,7 +46,7 @@ const registerPlugins = async () => {
       'https://ec1856b1.forum-frontend-8kh.pages.dev',
       'forum-frontend-8kh.pages.dev',
       'https://pzturk.com',
-      'http://admin.pzturk.com
+      'https://admin.pzturk.com'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
