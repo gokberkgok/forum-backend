@@ -43,8 +43,10 @@ const registerPlugins = async () => {
 
   await app.register(fastifyCors, {
     origin: [
+      'https://ec1856b1.forum-frontend-8kh.pages.dev',
+      'forum-frontend-8kh.pages.dev',
       'https://pzturk.com',
-      'https://admin.pzturk.com'
+      'http://admin.pzturk.com
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
