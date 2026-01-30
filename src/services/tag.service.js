@@ -26,11 +26,24 @@ class TagService {
    */
   async getBySlug(slug) {
     const tag = await tagRepository.findBySlug(slug);
-    
+
     if (!tag) {
       throw new NotFoundError('Tag not found');
     }
-    
+
+    return tag;
+  }
+
+  /**
+   * Get tag by ID
+   */
+  async getById(id) {
+    const tag = await tagRepository.findById(id);
+
+    if (!tag) {
+      throw new NotFoundError('Tag not found');
+    }
+
     return tag;
   }
 
@@ -104,7 +117,7 @@ class TagService {
    */
   async update(id, data, user) {
     const tag = await tagRepository.findById(id);
-    
+
     if (!tag) {
       throw new NotFoundError('Tag not found');
     }
@@ -133,7 +146,7 @@ class TagService {
    */
   async delete(id, user) {
     const tag = await tagRepository.findById(id);
-    
+
     if (!tag) {
       throw new NotFoundError('Tag not found');
     }
@@ -176,9 +189,9 @@ class TagService {
   async updateTopicTags(topicId, tagNames) {
     const tags = await this.findOrCreateByNames(tagNames);
     const tagIds = tags.map(t => t.id);
-    
+
     await tagRepository.updateTopicTags(topicId, tagIds);
-    
+
     return tags;
   }
 }

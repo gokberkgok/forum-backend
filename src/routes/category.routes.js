@@ -11,6 +11,7 @@ export const registerCategoryRoutes = async (app) => {
   // Public routes
   app.get('/categories', { preHandler: [optionalAuth] }, categoryController.getAll);
   app.get('/categories/stats', categoryController.getWithStats);
+  app.get('/categories/id/:id', { preHandler: [authenticate, requireRole(ROLES.ADMIN)] }, categoryController.getById);
   app.get('/categories/:slug', categoryController.getBySlug);
 
   // Admin routes

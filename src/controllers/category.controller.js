@@ -40,6 +40,17 @@ class CategoryController {
   };
 
   /**
+   * Get category by ID (admin)
+   * GET /api/categories/id/:id
+   */
+  getById = async (req, res) => {
+    const { id } = req.params;
+    const category = await categoryService.getById(id);
+
+    return successResponse(res, category, 'Category details');
+  };
+
+  /**
    * Create category (admin)
    * POST /api/categories
    */

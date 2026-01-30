@@ -12,6 +12,7 @@ export const registerTagRoutes = async (app) => {
   app.get('/tags', tagController.getAll);
   app.get('/tags/popular', tagController.getPopular);
   app.get('/tags/search', tagController.search);
+  app.get('/tags/id/:id', { preHandler: [authenticate, requireRole('ADMIN')] }, tagController.getById);
   app.get('/tags/:slug', tagController.getBySlug);
   app.get('/tags/:slug/topics', tagController.getTopicsByTag);
 

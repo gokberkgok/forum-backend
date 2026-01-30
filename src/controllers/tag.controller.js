@@ -42,6 +42,18 @@ class TagController {
   };
 
   /**
+   * Get tag by ID (admin)
+   * GET /api/tags/id/:id
+   */
+  getById = async (req, res) => {
+    const { id } = req.params;
+
+    const tag = await tagService.getById(id);
+
+    return successResponse(res, tag, 'Tag details');
+  };
+
+  /**
    * Get topics by tag
    * GET /api/tags/:slug/topics
    */
