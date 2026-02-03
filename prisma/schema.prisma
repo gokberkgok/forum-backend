@@ -22,6 +22,7 @@ enum Role {
   USER
   MODERATOR
   ADMIN
+  VIP
 }
 
 enum UserStatus {

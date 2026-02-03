@@ -44,7 +44,9 @@ const registerPlugins = async () => {
   await app.register(fastifyCors, {
     origin: [
       'https://pzturk.com',
-      'https://admin.pzturk.com'
+      'https://admin.pzturk.com',
+      'https://api.pzturk.com',
+      process.env.LOCAL_CORS_URL || '',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
