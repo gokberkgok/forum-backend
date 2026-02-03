@@ -11,3 +11,5 @@ export { default as postController } from './post.controller.js';
 export { default as tagController } from './tag.controller.js';
 export { default as menuController } from './menu.controller.js';
 export { default as uploadController } from './upload.controller.js';
+export { avatarController } from './avatar.controller.js';
+export { searchController } from './search.controller.js';

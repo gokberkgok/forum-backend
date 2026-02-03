@@ -4,14 +4,14 @@
 // Central export for all middlewares/hooks.
 
 export { authenticate, optionalAuth, requireVerified } from './auth.middleware.js';
-export { 
-  requireRole, 
-  requireMinimumRole, 
-  requirePermission, 
+export {
+  requireRole,
+  requireMinimumRole,
+  requirePermission,
   requireOwnershipOrRole,
   hasPermission,
   isHigherRole,
-  ROLES 
+  ROLES
 } from './rbac.middleware.js';
 export {
   authRateLimiter,
@@ -20,19 +20,19 @@ export {
   searchRateLimiter,
   uploadRateLimiter,
 } from './rateLimit.middleware.js';
-export { 
-  notFoundHandler, 
+export {
+  notFoundHandler,
   errorHandler
 } from './error.middleware.js';
-export { 
-  validateBody, 
-  validateQuery, 
-  validateParams, 
-  schemas 
+export {
+  validateBody,
+  validateQuery,
+  validateParams,
+  schemas
 } from './validation.middleware.js';
 export {
   helmetOptions,
-  //corsOptions,
+
   validateCloudflareRequest,
   requestIdHook,
   sanitizeRequest,
