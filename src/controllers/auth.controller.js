@@ -30,7 +30,7 @@ class AuthController {
       sameSite: 'lax', //config.cookie.sameSite,
       domain: config.cookie.domain,
       maxAge: 7 * 24 * 60 * 60, // 7 days (seconds in Fastify)
-     
+
     });
   }
 
@@ -38,12 +38,13 @@ class AuthController {
    * Clear auth cookies (Fastify)
    */
   clearAuthCookies(res) {
+    // CRITICAL: Must use same options as setAuthCookies for proper deletion
     const cookieOptions = {
-      httpOnly: true,
-      secure: config.cookie.secure,
-      sameSite: config.cookie.sameSite,
-      //domain: config.cookie.domain,
       path: '/',
+      httpOnly: true,
+      secure: true, // Must match setAuthCookies
+      sameSite: 'lax', // Must match setAuthCookies
+      domain: config.cookie.domain, // CRITICAL: Must be set for cross-domain (pzturk.com)
     };
 
     res.clearCookie('accessToken', cookieOptions);

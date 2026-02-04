@@ -9,8 +9,10 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMultipart from '@fastify/multipart';
+import fastifyWebsocket from '@fastify/websocket';
 import config from './config/index.js';
 import { registerRoutes } from './routes/index.js';
+import { registerWebSocketRoutes } from './routes/websocket.routes.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 
 // Create Fastify instance with pino logger
@@ -87,6 +89,9 @@ const registerPlugins = async () => {
       files: 5,
     },
   });
+
+  // WebSocket support
+  await app.register(fastifyWebsocket);
 };
 
 // ====================================================
@@ -132,6 +137,7 @@ app.setNotFoundHandler(notFoundHandler);
 
 const initApp = async () => {
   await registerPlugins();
+  await registerWebSocketRoutes(app); // Register WebSocket before HTTP routes
   await registerRoutes(app);
   return app;
 };
