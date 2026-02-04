@@ -89,6 +89,7 @@ model User {
   // Security
   lastLoginAt   DateTime?  @map("last_login_at")
   lastLoginIp   String?    @map("last_login_ip")
+  lastActiveAt  DateTime?  @map("last_active_at")
   failedLogins  Int        @default(0) @map("failed_logins")
   lockedUntil   DateTime?  @map("locked_until")
   
